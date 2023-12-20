@@ -7,6 +7,12 @@ const nextConfig = {
                 hostname: 'bootdey.com',
                 port: '',
                 pathname: '/img/**'
+            },
+            {
+                protocol: 'https',
+                hostname: 'image.tmdb.org',
+                port: '',
+                pathname: '/t/p/**'
             }
         ]
     }

@@ -16,10 +16,11 @@ export default function Home() {
   const [name, setName] = useState('Dylan');
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/`)
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/movies/now-playing`)
       .then((res) => res.json())
       .then((data) => {
         // data is an object
+        console.log('data', data)
         setData(data);
         setLoading(false);
       });
@@ -30,7 +31,32 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <p>{data.message}</p>
+      <h1 className={styles.title}>Welcome to Any Time Flix</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Movie</th>
+            <th>Rating</th>
+            <th>Release Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.results.map((movie) => (
+            console.log('movie', movie),
+            <tr key={movie.id}>
+              <td>
+                <Image
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  width={200}
+                  height={300}
+                />
+              </td>
+              <td>{movie.vote_average}</td>
+              <td>{movie.release_date}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </main>
   );
 }
