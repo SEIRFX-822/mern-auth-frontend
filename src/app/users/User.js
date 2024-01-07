@@ -7,7 +7,13 @@ export default function User({ user }) {
 
     function addUserData() {
         // add email to localStorage
-        localStorage.setItem('email', user.email);
+        if (typeof window !== 'undefined') {
+            console.log('Currently on Client side')
+            localStorage.setItem('email', user.email);
+        } else {
+            console.log('Currently on Server Side');
+        }
+        
         // set redirect to true
         setRedirect(true);
 

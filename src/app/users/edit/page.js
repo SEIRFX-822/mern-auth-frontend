@@ -26,17 +26,23 @@ export default function EditUser() {
 	const [state, setState] = useState('');
 	const [zipCode, setZipCode] = useState('');
 
-	setAuthToken(localStorage.getItem('jwtToken'));
+	if (typeof window !== 'undefined') {
+		console.log('Currently on Client side');
+		setAuthToken(localStorage.getItem('jwtToken'));
 
-	const expirationTime = new Date(parseInt(localStorage.getItem('expiration')) * 1000);
-    let currentTime = Date.now();
+		const expirationTime = new Date(parseInt(localStorage.getItem('expiration')) * 1000);
+		let currentTime = Date.now();
 
-    // make a condition that compares exp and current time
-    if (currentTime >= expirationTime) {
-        handleLogout();
-        alert('Session has ended. Please login to continue.');
-        router.push('/users/login');
-    }
+		// make a condition that compares exp and current time
+		if (currentTime >= expirationTime) {
+			handleLogout();
+			alert('Session has ended. Please login to continue.');
+			router.push('/users/login');
+		}
+	} else {
+		console.log('Currently on Server Side');
+	}
+
 
 	// create the 
 	const handleFirstName = (e) => {
@@ -104,7 +110,13 @@ export default function EditUser() {
 		axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${data._id}`, updateUserObject)
 			.then(response => {
 				// update email in localStorage
-				localStorage.setItem('email', email);
+				if (typeof window !== 'undefined') {
+					console.log('Currently on Client side')
+					localStorage.setItem('email', email);
+				
+				} else {
+					console.log('Currently on Server Side');
+				}
 				setRedirect(true);
 			})
 			.catch(error => {
@@ -115,33 +127,39 @@ export default function EditUser() {
 	};
 
 	useEffect(() => {
-		if (localStorage.getItem('jwtToken')) {
-			axois.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/email/${localStorage.getItem('email')}`)
-				.then((response) => {
-					// data is an object
-					let userData = jwtDecode(localStorage.getItem('jwtToken'));
-
-					if (response.data.user[0].email === userData.email) {
-						setData(response.data.user[0]);
-						setFirstName(response.data.user[0].firstName);
-						setLastName(response.data.user[0].lastName);
-						setEmail(response.data.user[0].email);
-						setJobTitle(response.data.user[0].jobTitle);
-						setNumber(response.data.user[0].number);
-						setStreetAddress(response.data.user[0].address.streetAddress);
-						setCity(response.data.user[0].address.city);
-						setState(response.data.user[0].address.state);
-						setZipCode(response.data.user[0].address.zipCode);
-						setLoading(false);
-					}
-				})
-				.catch((error) => {
-					console.log(error);
-					router.push('/users/login');
-				});
+		if (typeof window !== 'undefined') {
+			console.log('Currently on Client side')
+			if (localStorage.getItem('jwtToken')) {
+				axois.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/email/${localStorage.getItem('email')}`)
+					.then((response) => {
+						// data is an object
+						let userData = jwtDecode(localStorage.getItem('jwtToken'));
+	
+						if (response.data.user[0].email === userData.email) {
+							setData(response.data.user[0]);
+							setFirstName(response.data.user[0].firstName);
+							setLastName(response.data.user[0].lastName);
+							setEmail(response.data.user[0].email);
+							setJobTitle(response.data.user[0].jobTitle);
+							setNumber(response.data.user[0].number);
+							setStreetAddress(response.data.user[0].address.streetAddress);
+							setCity(response.data.user[0].address.city);
+							setState(response.data.user[0].address.state);
+							setZipCode(response.data.user[0].address.zipCode);
+							setLoading(false);
+						}
+					})
+					.catch((error) => {
+						console.log(error);
+						router.push('/users/login');
+					});
+			} else {
+				router.push('/users/login');
+			}
 		} else {
-			router.push('/users/login');
+			console.log('Currently on Server Side');
 		}
+		
 	}, []);
 
 	if (isLoading) return <p>Loading...</p>;
