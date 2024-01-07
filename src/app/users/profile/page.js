@@ -13,15 +13,21 @@ export default function Profile() {
     const [data, setData] = useState(null);
     const [isLoading, setLoading] = useState(true);
 
-    const expirationTime = new Date(parseInt(localStorage.getItem('expiration')) * 1000);
-    let currentTime = Date.now();
+    if (typeof window !== 'undefined') {
+        console.log('Currently on Client side');
+        const expirationTime = new Date(parseInt(localStorage.getItem('expiration')) * 1000);
+        let currentTime = Date.now();
 
-    // make a condition that compares exp and current time
-    if (currentTime >= expirationTime) {
-        handleLogout();
-        alert('Session has ended. Please login to continue.');
-        router.push('/users/login');
+        // make a condition that compares exp and current time
+        if (currentTime >= expirationTime) {
+            handleLogout();
+            alert('Session has ended. Please login to continue.');
+            router.push('/users/login');
+        }
+    } else {
+        console.log('Currently on Server Side');
     }
+
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
